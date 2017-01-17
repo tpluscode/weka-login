@@ -1,0 +1,51 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../polymerfire/firebase-auth.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../social-post-icons/social-post-icons.html">
+
+<dom-module id="weka-login">
+  <template>
+    <firebase-auth id="auth" user="{{user}}" signed-in="{{signedIn}}"></firebase-auth>
+
+    <template is="dom-if" if="[[!signedIn]]">
+      <paper-icon-button icon="social-post:gplus" on-tap="login" data-provider="google"></paper-icon-button>
+      <paper-icon-button icon="social-post:facebook" on-tap="login" data-provider="facebook"></paper-icon-button>
+      <paper-icon-button icon="social-post:github" on-tap="login" data-provider="github"></paper-icon-button>
+      <paper-icon-button icon="social-post:twitter" on-tap="login" data-provider="twitter"></paper-icon-button>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'weka-login',
+      properties: {
+        signedIn: {
+          notify: true
+        },
+        participant: {
+          type: Object,
+          computed: '_getUser(user)',
+          notify: true
+        },
+      },
+
+      login: function(e) {
+        this.$.auth.signInWithPopup(e.currentTarget.getAttribute('data-provider'));
+      },
+
+      logout: function() {
+        this.$.auth.signOut();
+      },
+
+      _getUser: function(user) {
+        if(!user) return;
+
+        return {
+          photo: user.photoURL,
+          name: user.displayName
+        }
+      }
+    });
+  </script>
+</dom-module>

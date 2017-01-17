@@ -1,0 +1,16 @@
+{
+  "name": "weka-login",
+  "main": "weka-login.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "polymerfire": "firebase/polymerfire#^0.10.3",
+    "paper-icon-button": "polymerelements/paper-icon-button#^1.1.4",
+    "social-post-icons": "^0.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
