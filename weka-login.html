@@ -1,12 +1,30 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="../polymerfire/firebase-auth.html">
+<link rel="import" href="../polymerfire/firebase-document.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../social-post-icons/social-post-icons.html">
 
 <dom-module id="weka-login">
   <template>
+    <style>
+      [icon='social-post:facebook'] {
+        --iron-icon-fill-color: var(--weka-login-color-facebook);
+      }
+      [icon='social-post:gplus'] {
+        --iron-icon-fill-color: var(--weka-login-color-google);
+      }
+      [icon='social-post:twitter'] {
+        --iron-icon-fill-color: var(--weka-login-color-twitter);
+      }
+      [icon='social-post:github'] {
+        --iron-icon-fill-color: var(--weka-login-color-github);
+      }
+    </style>
+
     <firebase-auth id="auth" user="{{user}}" signed-in="{{signedIn}}"></firebase-auth>
+
+    <firebase-document id="user"></firebase-document>
 
     <template is="dom-if" if="[[!signedIn]]">
       <paper-icon-button icon="social-post:gplus" on-tap="login" data-provider="google"></paper-icon-button>
@@ -30,22 +48,61 @@
         },
       },
 
+      observers: [
+        '_saveUser(participant)'
+      ],
+
       login: function(e) {
         this.$.auth.signInWithPopup(e.currentTarget.getAttribute('data-provider'));
       },
 
       logout: function() {
-        this.$.auth.signOut();
+        var self = this;
+        this.participant.active = false;
+        this.$.user.setStoredValue('/participants/' + this.participant.id, this.participant)
+          .then(function () {
+            self.$.auth.signOut();
+          });
+      },
+
+      _saveUser: function (user) {
+        if (user) {
+          this.$.user.setStoredValue('/participants/' + user.id, user);
+        }
       },
 
       _getUser: function(user) {
         if(!user) return;
 
         return {
+          id: user.uid,
           photo: user.photoURL,
-          name: user.displayName
+          name: user.displayName,
+          active: true,
+          provider: _getProvider(user)
         }
       }
     });
+
+    function _getProvider(user) {
+      var icon;
+
+      switch (user.providerData[0].providerId){
+        case 'google.com':
+          icon = 'gplus';
+          break;
+        case 'github.com':
+          icon = 'github';
+          break;
+        case 'facebook.com':
+          icon = 'facebook';
+          break;
+        case 'twitter.com':
+          icon = 'twitter';
+          break;
+      }
+
+      return icon;
+    }
   </script>
 </dom-module>
